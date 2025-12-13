@@ -1,0 +1,19 @@
+﻿Verifying quote submission...
+Payload: {
+  company_name: 'Test Company',
+  contact_name: 'Test Contact',
+  email: 'test@example.com',
+  phone: '555-0199',
+  pickup_city: 'Test City',
+  pickup_state: 'TS',
+  delivery_city: 'Dest City',
+  delivery_state: 'DS',
+  weight: '1000',
+  pallets: '2',
+  equipment_type: 'Dry Van',
+  notes: 'This is a test submission from verification script.',
+  attachment_url: null,
+  commodity: 'Test Commodity',
+  pickup_date: '2023-01-01',
+  delivery_date: '2023-01-05'
+}

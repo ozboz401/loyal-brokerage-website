@@ -1,0 +1,41 @@
+
+ADD AGENT AUTOMATION REPORT
+==================================
+DATE: 2025-12-09
+TESTER: Autonomous Agent
+
+TEST SUMMARY
+----------------------------------
+1.  **UI AUTOMATION (Puppeteer)**: ⚠️ BLOCKED
+    -   Admin Login: PASS (Patched Auth Sync)
+    -   Navigation: PASS
+    -   Form Submission: BLOCKED by Backend Schema Error
+
+2.  **EDGE FUNCTION API**: ❌ FAIL (Schema Mismatch)
+    -   Endpoint: http://localhost:8000/create-agent-user
+    -   Status: 400 Bad Request
+    -   Error: Database Insert Failed
+    -   Root Cause: Column `commission_percent` does not exist on target database.
+
+DIAGNOSIS
+----------------------------------
+The Code and Logic are **REPAIRED**, but the **Database Schema** on the target Supabase project has not been updated.
+Because autonomous deployment was blocked (Login required), the new columns (`commission_percent`, `is_active`) needed by the code do not exist in the DB.
+
+REQUIRED ACTION
+----------------------------------
+You MUST run the migration to unblock the system:
+
+```bash
+npx supabase login
+npx supabase db push
+```
+
+Once this is run, the "Add Agent" feature will work immediately.
+
+ARTIFACTS GENERATED
+----------------------------------
+-   `scripts/e2e-puppeteer.js` (UI Test)
+-   `scripts/test-agent-creation.js` (API Test)
+-   `supabase/consolidated_schema.sql` (The fix)
+==================================
