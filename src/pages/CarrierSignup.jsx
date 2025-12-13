@@ -5,83 +5,249 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function CarrierSignup() {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [toast, setToast] = useState(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
-    const [formData, setFormData] = useState({
-        company_name: "", dba: "", business_type: "LLC",
-        address_street: "", address_city: "", address_state: "", address_zip: "",
-        mc_number: "", dot_number: "", ein: "", years_in_business: "",
-        primary_contact: "", primary_phone: "", primary_email: "",
-        dispatch_contact: "", dispatch_phone: "", billing_email: "", after_hours_phone: "",
-        truck_count: "", driver_count: "",
-        equipment_types: [], operating_states: [],
-        hazmat: false, safety_rating: "Satisfactory",
-        liability_amount: "", cargo_amount: "",
-        insurance_company: "", agent_name: "", agent_email: "", agent_phone: "",
-        policy_expiration: "",
-        compliance_1: false, compliance_2: false, compliance_3: false, compliance_4: false
-    });
+  const [formData, setFormData] = useState({
+    company_name: "",
+    dba: "",
+    business_type: "LLC",
 
-    const [files, setFiles] = useState({
-        w9: null,
-        coi: null,
-        insurance_doc: null,
-        authority_letter: null,
-        agreement: null,
-        ach: null
-    });
+    address_street: "",
+    address_city: "",
+    address_state: "",
+    address_zip: "",
 
-    const showToast = (message) => {
-        setToast(message);
-        setTimeout(() => setToast(null), 3000);
-    };
+    mc_number: "",
+    dot_number: "",
+    ein: "",
+    years_in_business: "",
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    primary_contact: "",
+    primary_phone: "",
+    primary_email: "",
 
-        if (
-            !formData.compliance_1 ||
-            !formData.compliance_2 ||
-            !formData.compliance_3 ||
-            !formData.compliance_4
-        ) {
-            alert("Please agree to all legal compliance statements.");
-            return;
+    dispatch_contact: "",
+    dispatch_phone: "",
+    billing_email: "",
+    after_hours_phone: "",
+
+    truck_count: "",
+    driver_count: "",
+
+    equipment_types: [],
+    operating_states: [],
+
+    hazmat: false,
+    safety_rating: "Satisfactory",
+
+    liability_amount: "",
+    cargo_amount: "",
+
+    insurance_company: "",
+    agent_name: "",
+    agent_email: "",
+    agent_phone: "",
+    policy_expiration: "",
+
+    compliance_1: false,
+    compliance_2: false,
+    compliance_3: false,
+    compliance_4: false,
+  });
+
+  const [files, setFiles] = useState({
+    w9: null,
+    coi: null,
+    insurance_doc: null,
+    authority_letter: null,
+    agreement: null,
+    ach: null,
+  });
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      !formData.compliance_1 ||
+      !formData.compliance_2 ||
+      !formData.compliance_3 ||
+      !formData.compliance_4
+    ) {
+      alert("Please agree to all legal compliance statements.");
+      return;
+    }
+
+    setLoading(true);
+    showToast("Submitting application...");
+
+    // 1️⃣ DB + file upload
+    const result = await submitCarrierApplication(formData, files);
+
+    if (!result.success) {
+      alert("Submission failed: " + result.message);
+      setLoading(false);
+      return;
+    }
+
+    // 2️⃣ EMAIL EDGE FUNCTION (🔥 ÖNEMLİ KISIM 🔥)
+    try {
+      await fetch(
+        `${import.meta.env.VITE_SUPABASE_FUNCTION_URL}/carrier-signup-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: formData, // 🔑 Edge Function bunu bekliyor
+          }),
         }
+      );
+    } catch (err) {
+      console.error("Carrier email failed:", err);
+    }
 
-        setLoading(true);
-        showToast("Uploading documents...");
+    showToast("Application submitted successfully!");
+    navigate("/carrier-success");
+  };
 
-        const result = await submitCarrierApplication(formData, files);
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Navbar />
 
-        if (result.success) {
-            showToast("Form Submitted Successfully!");
-            navigate("/carrier-success");
-        } else {
-            alert("Submission Failed: " + result.message);
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50 text-gray-900">
-            <Navbar />
-
-            {toast && (
-                <div className="fixed top-24 right-5 bg-blue-700 text-white px-6 py-3 rounded-lg shadow-xl z-50">
-                    {toast}
-                </div>
-            )}
-
-            <div className="pt-32 pb-20 px-4">
-                <form onSubmit={handleSubmit}>
-                    {/* form içeriği aynı */}
-                </form>
-            </div>
-
-            <Footer />
+      {toast && (
+        <div className="fixed top-24 right-5 bg-blue-700 text-white px-6 py-3 rounded-lg shadow-xl z-50">
+          {toast}
         </div>
-    );
+      )}
+
+      <div className="pt-32 pb-20 px-4 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Carrier Registration</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            placeholder="Company Name"
+            value={formData.company_name}
+            onChange={(e) =>
+              setFormData({ ...formData, company_name: e.target.value })
+            }
+            required
+            className="w-full p-3 border rounded"
+          />
+
+          <input
+            placeholder="Primary Email"
+            type="email"
+            value={formData.primary_email}
+            onChange={(e) =>
+              setFormData({ ...formData, primary_email: e.target.value })
+            }
+            required
+            className="w-full p-3 border rounded"
+          />
+
+          <input
+            placeholder="MC Number"
+            value={formData.mc_number}
+            onChange={(e) =>
+              setFormData({ ...formData, mc_number: e.target.value })
+            }
+            required
+            className="w-full p-3 border rounded"
+          />
+
+          <input
+            placeholder="DOT Number"
+            value={formData.dot_number}
+            onChange={(e) =>
+              setFormData({ ...formData, dot_number: e.target.value })
+            }
+            required
+            className="w-full p-3 border rounded"
+          />
+
+          <input
+            placeholder="Number of Trucks"
+            type="number"
+            value={formData.truck_count}
+            onChange={(e) =>
+              setFormData({ ...formData, truck_count: e.target.value })
+            }
+            className="w-full p-3 border rounded"
+          />
+
+          <input
+            placeholder="Number of Drivers"
+            type="number"
+            value={formData.driver_count}
+            onChange={(e) =>
+              setFormData({ ...formData, driver_count: e.target.value })
+            }
+            className="w-full p-3 border rounded"
+          />
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.compliance_1}
+              onChange={(e) =>
+                setFormData({ ...formData, compliance_1: e.target.checked })
+              }
+            />
+            I certify the information is accurate
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.compliance_2}
+              onChange={(e) =>
+                setFormData({ ...formData, compliance_2: e.target.checked })
+              }
+            />
+            I allow verification
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.compliance_3}
+              onChange={(e) =>
+                setFormData({ ...formData, compliance_3: e.target.checked })
+              }
+            />
+            I agree to FMCSA regulations
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={formData.compliance_4}
+              onChange={(e) =>
+                setFormData({ ...formData, compliance_4: e.target.checked })
+              }
+            />
+            I accept the carrier agreement
+          </label>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-700 text-white py-3 rounded font-bold disabled:bg-gray-400"
+          >
+            {loading ? "Submitting..." : "Submit Application"}
+          </button>
+        </form>
+      </div>
+
+      <Footer />
+    </div>
+  );
 }
