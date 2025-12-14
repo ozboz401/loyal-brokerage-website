@@ -87,8 +87,17 @@ export default function CarrierSignup() {
     setLoading(true);
     showToast("Submitting application...");
 
+    // ✅ NORMALIZE FORM DATA (DATE alanları NULL olmalı)
+    const normalizedFormData = {
+      ...formData,
+      policy_expiration:
+        formData.policy_expiration && formData.policy_expiration !== ""
+          ? formData.policy_expiration
+          : null,
+    };
+
     // 1️⃣ DB + file upload
-    const result = await submitCarrierApplication(formData, files);
+    const result = await submitCarrierApplication(normalizedFormData, files);
 
     if (!result.success) {
       alert("Submission failed: " + result.message);
@@ -96,7 +105,7 @@ export default function CarrierSignup() {
       return;
     }
 
-    // 2️⃣ EMAIL EDGE FUNCTION (🔥 ÖNEMLİ KISIM 🔥)
+    // 2️⃣ EMAIL EDGE FUNCTION
     try {
       await fetch(
         `${import.meta.env.VITE_SUPABASE_FUNCTION_URL}/carrier-signup-email`,
@@ -106,7 +115,7 @@ export default function CarrierSignup() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            data: formData, // 🔑 Edge Function bunu bekliyor
+            data: normalizedFormData,
           }),
         }
       );
