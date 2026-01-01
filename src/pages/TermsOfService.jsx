@@ -42,18 +42,22 @@ export default function TermsOfService() {
                         <p>
                             Loyal Brokerage LLC does not guarantee carrier availability, pricing,
                             capacity, transit times, or delivery outcomes. All transportation
-                            services are performed by independent third-party motor carriers, and
-                            any estimates provided are non-binding unless confirmed in writing.
+                            services are performed by independent third-party motor carriers.
+                            Any estimates provided are non-binding unless confirmed in writing.
                         </p>
 
                         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4">
-                            3. Quotes & Pricing
+                            3. Quotes, Pricing & Payments
                         </h2>
                         <p>
-                            All rate quotes are estimates unless confirmed in writing. Pricing may
-                            change due to market conditions, fuel surcharges, accessorial charges,
-                            detention, layover, port delays, weather conditions, or inaccurate
-                            shipment information provided by shippers or carriers.
+                            All rate quotes are estimates unless confirmed in writing. Pricing
+                            may change due to market conditions, fuel surcharges, accessorial
+                            charges, detention, layover, port delays, weather conditions, or
+                            inaccurate shipment information provided by shippers or carriers.
+                        </p>
+                        <p>
+                            Payments may not be withheld, delayed, or offset due to cargo claims,
+                            disputes, or allegations of loss or damage.
                         </p>
 
                         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4">
@@ -80,9 +84,14 @@ export default function TermsOfService() {
                             Carrier cargo insurance, if any, applies subject to the carrier’s
                             policy terms and applicable federal regulations.
                         </p>
+                        <p className="mt-4">
+                            To the extent permitted by law, Broker’s total liability for any
+                            non-cargo related claim shall be limited to the freight charges paid
+                            for the applicable shipment.
+                        </p>
 
                         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4">
-                            5. User Responsibilities
+                            5. User & Shipper Responsibilities
                         </h2>
                         <p>
                             Users agree to provide accurate and complete shipment information,
@@ -90,6 +99,11 @@ export default function TermsOfService() {
                             misuse of the website or services. Loyal Brokerage LLC is not
                             responsible for losses or errors resulting from inaccurate or
                             incomplete information provided by users.
+                        </p>
+                        <p>
+                            Shippers are responsible for ensuring that all cargo is properly
+                            packaged, marked, and labeled for safe transportation and compliance
+                            with applicable laws and regulations.
                         </p>
 
                         <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4">
